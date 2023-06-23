@@ -4,7 +4,7 @@ import {
   Dimensions,
   PixelRatio,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -63,7 +63,7 @@ const App = () => {
   }
 
   function onCameraTransformUpdate(pos) {
-    cameraTransformInfo.push(pos);
+    cameraTransformInfo.push(pos.position);
     setCameraTransformInfo(cameraTransformInfo);
   }
 
@@ -84,17 +84,17 @@ const App = () => {
 
   const recordError = e => {
     console.error('recordError', e);
+    setIsRecording(!isRecording);
   };
 
   const writeCameraTranformFile = () => {
     console.log(JSON.stringify(cameraTransformInfo));
     RNFS.writeFile(path, JSON.stringify(cameraTransformInfo), 'utf8')
       .then(success => {
-        console.log('FILE WRITTEN!');
         onShare();
       })
       .catch(err => {
-        console.log(err.message);
+        console.error(err.message);
       });
   };
 
@@ -107,9 +107,18 @@ const App = () => {
           true,
           recordError,
         );
+        console.log('recording startd!');
       } else {
         const stope = await ARSceneNav.sceneNavigator.stopVideoRecording();
         writeCameraTranformFile(stope.url);
+        if (stope.success) {
+          Alert.alert('Video Saved', `Video is save to ${stope.url}`);
+        } else {
+          Alert.alert(
+            'Failed to save video',
+            `Faile with errorCode: ${stope.errorCode}`,
+          );
+        }
         console.log('recording end', stope, path, stope.url);
       }
     }
@@ -123,9 +132,9 @@ const App = () => {
         initialScene={{scene: InitialARScene}}
         autofocus={true}
       />
-      <TouchableHighlight style={styles.recordButton} onPress={handleRecord}>
+      <TouchableOpacity style={styles.recordButton} onPress={handleRecord}>
         <Text style={styles.recordText}>{isRecording ? 'Stop' : 'Record'}</Text>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 };
