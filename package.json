@@ -12,7 +12,9 @@
   "dependencies": {
     "@viro-community/react-viro": "^2.20.2",
     "react": "17.0.2",
-    "react-native": "0.65.1"
+    "react-native": "0.65.1",
+    "react-native-fs": "^2.20.0",
+    "react-native-share": "^9.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
