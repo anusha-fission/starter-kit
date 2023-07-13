@@ -1,26 +1,9 @@
-import React, {useRef, useState} from 'react';
-import {
-  Alert,
-  Dimensions,
-  PixelRatio,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {
   ViroARSceneNavigator,
   ViroARScene,
   ViroText,
-  ViroMaterials,
-  ViroBox,
-  Viro3DObject,
-  ViroAmbientLight,
-  ViroSpotLight,
-  ViroARPlane,
-  ViroARPlaneSelector,
-  ViroQuad,
-  ViroNode,
-  ViroAnimations,
   ViroConstants,
 } from '@viro-community/react-viro';
 import styles from './AppStyles';
@@ -37,7 +20,7 @@ const App = () => {
   const onShare = async videoUrl => {
     try {
       const result = await Share.open({
-        urls: [`file://${path}`, `file:/${videoUrl}`],
+        urls: [`file://${path}`, `file://${videoUrl}`],
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -54,7 +37,7 @@ const App = () => {
   };
 
   function onInitialized(state, reason) {
-    console.log('guncelleme', state, reason, ARSceneNav?.bloomEnabled);
+    // console.log('guncelleme', state, reason, ARSceneNav?.bloomEnabled);
     if (state === ViroConstants.TRACKING_NORMAL) {
       setText('Hello World!');
     } else if (state === ViroConstants.TRACKING_NONE) {
@@ -62,22 +45,22 @@ const App = () => {
     }
   }
 
-  function onCameraTransformUpdate(pos) {
+  const onCameraTransformUpdate = pos => {
     cameraTransformInfo.push(pos.position);
-    setCameraTransformInfo(cameraTransformInfo);
-  }
+    setCameraTransformInfo([...cameraTransformInfo]);
+  };
 
   const InitialARScene = () => {
     return (
       <ViroARScene
         onTrackingUpdated={onInitialized}
         onCameraTransformUpdate={onCameraTransformUpdate}>
-        <ViroText
+        {/* <ViroText
           text={text}
           scale={[0.5, 0.5, 0.5]}
           position={[0, 0, -1]}
           style={styles.helloWorldTextStyle}
-        />
+        /> */}
       </ViroARScene>
     );
   };
@@ -87,11 +70,11 @@ const App = () => {
     setIsRecording(!isRecording);
   };
 
-  const writeCameraTranformFile = () => {
-    console.log(JSON.stringify(cameraTransformInfo));
+  const writeCameraTranformFile = videoUrl => {
+    console.log('cameraTransformInfo?.length,', cameraTransformInfo?.length);
     RNFS.writeFile(path, JSON.stringify(cameraTransformInfo), 'utf8')
       .then(success => {
-        onShare();
+        onShare(videoUrl);
       })
       .catch(err => {
         console.error(err.message);
@@ -101,12 +84,13 @@ const App = () => {
   const handleRecord = async () => {
     if (ARSceneNav?.sceneNavigator) {
       if (!isRecording) {
-        setCameraTransformInfo([]);
         ARSceneNav.sceneNavigator.startVideoRecording(
-          'viroRecord',
+          `${new Date().getTime()}`,
           true,
           recordError,
         );
+        console.log('reset data');
+        setCameraTransformInfo([]);
         console.log('recording startd!');
       } else {
         const stope = await ARSceneNav.sceneNavigator.stopVideoRecording();
