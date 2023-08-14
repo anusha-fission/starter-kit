@@ -19,6 +19,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: 'red',
   },
+  recordButton1: {
+    padding: 10,
+    position: 'absolute',
+    bottom: 30,
+    left: '20%',
+    borderRadius: 16,
+    backgroundColor: 'red',
+  },
   recordText: {
     textTransform: 'capitalize',
     fontSize: 18,
