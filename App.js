@@ -128,6 +128,7 @@ class App extends React.Component {
       } else {
         const stop = await this.ARSceneNav.sceneNavigator.stopVideoRecording();
         this.writeCameraTranformFile(stop.url);
+
         if (stop.success) {
           Alert.alert('Video Saved', `Video is save to ${stop.url}`);
         } else {
