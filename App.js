@@ -123,6 +123,7 @@ class App extends React.Component {
             );
           },
         );
+
         console.log('recording startd!');
       } else {
         const stop = await this.ARSceneNav.sceneNavigator.stopVideoRecording();
